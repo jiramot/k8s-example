@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: simple-watch
+  namespace: simple-system
+  labels:
+    k8s-app: simple-watch
+spec:
+  selector:
+    matchLabels:
+      name: simple-watch
+  template:
+    metadata:
+      labels:
+        name: simple-watch
+    spec:
+      serviceAccountName: simple-watcher-account
+      tolerations:
+        - key: node-role.kubernetes.io/master
+          operator: Exists
+          effect: NoSchedule
+      containers:
+        - name: simple-watch
+          image: ghcr.io/jiramot/k8s-example/simple-watch
+          resources:
+            limits:
+              memory: 200Mi
+            requests:
+              cpu: 100m
+              memory: 200Mi
+      terminationGracePeriodSeconds: 30
